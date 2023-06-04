@@ -1,17 +1,18 @@
 package com.example.demo.repository;
 
-import java.util.Optional;
-
 import com.example.demo.domain.BankAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
+@Repository
+@Transactional
 public interface BankAccountRepository extends JpaRepository<BankAccount, Long>, JpaSpecificationExecutor<BankAccount> {
 
-  @Query("SELECT COUNT(ba) FROM BankAccount ba WHERE ba.subject.id = :subject")
-  int numberOfAccounts(Long subject);
+  int countBySubject_Id(Long id);
 
-  //@Query("SELECT ba FROM BankAccount ba WHERE ba.subject.id = :subjectId")
-  Optional<BankAccount> findBySubject_Id(Long subjectId);
+  Optional<BankAccount> findBySubjectId(Long subjectId);
 }

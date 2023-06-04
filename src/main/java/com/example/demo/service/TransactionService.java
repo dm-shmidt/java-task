@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.api.PostTransactionRequest;
+import com.example.demo.api.TransactionResponse;
 
 public interface TransactionService {
 
@@ -12,5 +13,5 @@ public interface TransactionService {
    * @param request holding transaction amount
    * @param account id of account where transaction will be added
    */
-  void createTransaction(Long account, PostTransactionRequest request);
+  TransactionResponse createTransaction(Long account, PostTransactionRequest request);
 }

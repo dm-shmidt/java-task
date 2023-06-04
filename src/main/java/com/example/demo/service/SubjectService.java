@@ -2,11 +2,13 @@ package com.example.demo.service;
 
 import com.example.demo.api.CreateSubjectRequest;
 import com.example.demo.api.SubjectResponse;
+
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface SubjectService {
+
+  List<SubjectResponse> findAll();
 
   Long save(CreateSubjectRequest request);
 

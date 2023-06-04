@@ -1,7 +1,9 @@
 package com.example.demo.api;
 
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 @Data
 public class BankAccountResponse {
@@ -11,5 +13,6 @@ public class BankAccountResponse {
   private String suffix;
 
   private BigDecimal balance;
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private Long subject;
 }

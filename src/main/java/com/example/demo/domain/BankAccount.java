@@ -1,19 +1,16 @@
 package com.example.demo.domain;
 
 import java.math.BigDecimal;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import javax.persistence.*;
 
-@Getter
-@Setter
+import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
+@Transactional
 @Entity
 @Table(name = "bank_accounts")
 public class BankAccount {
@@ -29,7 +26,7 @@ public class BankAccount {
 
   private BigDecimal balance;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "subject")
   private Subject subject;
 }

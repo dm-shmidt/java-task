@@ -1,14 +1,28 @@
+embedded:
+  postgresql:
+    user: postgres
+    password: admin
+    host: localhost
+    port: 5432
+    schema: example_db
 spring:
   liquibase:
     change-log: classpath:/schema.xml
   jpa:
+    database-platform: postgres
     open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
   datasource:
+    driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}
     password: ${embedded.postgresql.password}
     username: ${embedded.postgresql.user}
 
-prefix-service:
-  version: v1
+prefix-client:
+  version: v2
+  url: http://localhost:8082/${prefix-client.version}

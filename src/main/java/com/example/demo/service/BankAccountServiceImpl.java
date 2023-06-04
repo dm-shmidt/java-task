@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.example.demo.api.BankAccountResponse;
@@ -19,7 +20,6 @@ public class BankAccountServiceImpl implements BankAccountService {
 
   private final BankAccountRepository bankAccountRepository;
   private final BankAccountMapper bankAccountMapper;
-  private final SubjectService subjectService;
 
   @Override
   @Transactional(readOnly = true)
@@ -29,7 +29,7 @@ public class BankAccountServiceImpl implements BankAccountService {
 
   @Transactional
   public void applyForLoan(Long subjectId) {
-    Optional<BankAccount> bankAccount = bankAccountRepository.findBySubject_Id(subjectId);
+    Optional<BankAccount> bankAccount = bankAccountRepository.findBySubjectId(subjectId);
     if (bankAccount.isPresent()) {
         bankAccount.get().setApplyForLoan(true);
         if (bankAccount.get().getBalance().compareTo(BigDecimal.TEN) <= 0) {
@@ -37,4 +37,17 @@ public class BankAccountServiceImpl implements BankAccountService {
         }
     }
   }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BankAccount findById(Long id) {
+        return bankAccountRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Bank account with " + id + " not found."));
+    }
+
+    @Override
+    @Transactional
+    public BankAccountResponse addAccount(BankAccount bankAccount) {
+        return bankAccountMapper.map(bankAccountRepository.save(bankAccount));
+    }
 }

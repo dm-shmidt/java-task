@@ -1,18 +1,17 @@
 package com.example.demo.domain;
 
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import javax.persistence.*;
 
-@Getter
-@Setter
+import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
+@Transactional
 @Entity
 @Table(name = "subjects")
 public class Subject {
@@ -24,7 +23,8 @@ public class Subject {
   private String name;
   private String lastName;
 
-  @OneToMany(mappedBy = "subject")
-  private List<BankAccount> accounts;
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "subject", referencedColumnName = "id")
+  private List<BankAccount> accounts = new ArrayList<>();
 
 }

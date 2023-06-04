@@ -1,15 +1,17 @@
 package com.example.demo.repository;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Getter
 @RequiredArgsConstructor
 public class SequenceProviderImpl implements SequenceProvider {
 
-  public final static String QUERY = "select nextval('account_sequence')";
+  private final static String QUERY = "select nextval('account_sequence')";
 
   private final JdbcTemplate jdbcTemplate;
 

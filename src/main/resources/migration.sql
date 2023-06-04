@@ -13,6 +13,7 @@ create table bank_accounts
     suffix  varchar(128)   not null,
     balance numeric(18, 2) not null,
     subject bigint,
+    apply_for_loan boolean,
     primary key (id),
     foreign key (subject) references subjects (id)
 );
