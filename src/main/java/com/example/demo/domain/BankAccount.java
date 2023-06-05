@@ -19,6 +19,7 @@ public class BankAccount {
   @GeneratedValue
   private Long id;
 
+  private String accountNumber;
   private String prefix;
   private String suffix;
 

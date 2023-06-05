@@ -11,6 +11,7 @@ create table bank_accounts
     id      bigint         not null,
     prefix  varchar(128)   not null,
     suffix  varchar(128)   not null,
+    account_number varchar(128) not null,
     balance numeric(18, 2) not null,
     subject bigint,
     apply_for_loan boolean,

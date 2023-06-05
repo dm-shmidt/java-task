@@ -21,15 +21,21 @@ The business came with complaint that our client is not happy before Christmas. 
 reduce the number of tasks that needs to be done before you leave for vacation.
 
 * add validation to api layer, or at least make sure user cannot submit negative transaction value
-* fetching bank accounts takes too long, this may be due to fact that Subject is always fetched even when it's not
+* fetching bank accounts takes too long, this may be due to the fact that Subject is always fetched even when it's not
   needed in algorithm
-* client noticed that subject given name is never stored in database. Find out why and fix it without any change in API
+* client noticed that subject given name is never stored in database. Find out why and fix it without any change in API.
+_**(new)**_ For this purpose rename subject's **givenName** field to **lastName** to be compliant with entity **Subject**.
 * loading non-existent subject returns status `400` instead of proper status `404`
-* with each newly created subject, bank account should be created as well. Use already implemented `SequenceProvider`
+* ~~with each newly created subject, bank account should be created as well~~. _**(new)**_ **Account** should be created only with 
+a corresponding **Subject**. 
+* Use already implemented `SequenceProvider`
   written by Santa's Dasher.
-    * suffix use `SequenceProvider` to give you par of full 4-digit number such as `0300`, `0001`, `2021`
+    * suffix use `SequenceProvider` to give you a part of the full 4-digit number such as `0300`, `0001`, `2021`
+      _**(Doesn't make sense or the purpose of suffix has to be explained as 4-digit number appears to be cycled. 
+  I.e. use some enum or longer digit sequence.)**_
+    * **_(new)_** introduce bank account number, for demo purpose generate it as UUID.
     * for prefix use `PrefixClient` which is calling external service. It may be using old version of API make sure `v2`
-      api is called
+      api is called. Create `PrefixClient` service to generate the prefix. 
 * `SequenceProviderImpl` does not meet simple java conventions fix it
 * there is a missing core functionality where transactions are added to bank accounts. Implement `TransactionService`
   meeting written documentation and write unit tests for this interface which covers all possible scenarios set by

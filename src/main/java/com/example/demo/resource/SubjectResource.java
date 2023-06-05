@@ -7,6 +7,7 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RequiredArgsConstructor
 @RestController
@@ -15,9 +16,12 @@ public class SubjectResource {
 
   private final SubjectService subjectService;
 
+  // Generated uri-string avoiding constant value of it.
   @PostMapping
   public ResponseEntity<Void> create(@RequestBody CreateSubjectRequest request) {
-    return ResponseEntity.created(URI.create("http://localhost:8080/subjects/" + subjectService.save(request))).build();
+    String location = ServletUriComponentsBuilder
+            .fromCurrentRequest().buildAndExpand().toUriString() + "/";
+    return ResponseEntity.created(URI.create(location + subjectService.save(request))).build();
   }
 
   @GetMapping

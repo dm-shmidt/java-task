@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SequenceProviderImpl implements SequenceProvider {
 
+  private final short SUFFIX_LENGTH = 9; // 9 makes sense to keep suffix not cycled one.
+
   private final static String QUERY = "select nextval('account_sequence')";
 
   private final JdbcTemplate jdbcTemplate;
@@ -18,6 +20,6 @@ public class SequenceProviderImpl implements SequenceProvider {
   @Override
   @Transactional(readOnly = true)
   public String next() {
-    return String.valueOf(jdbcTemplate.queryForObject(QUERY, Long.class));
+    return String.format("%0" + SUFFIX_LENGTH + "d", jdbcTemplate.queryForObject(QUERY, Long.class));
   }
 }

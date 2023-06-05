@@ -3,11 +3,17 @@ package com.example.demo.service;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
+import com.example.demo.api.BankAccountRequest;
 import com.example.demo.api.BankAccountResponse;
 import com.example.demo.domain.BankAccount;
+import com.example.demo.domain.Subject;
 import com.example.demo.mapper.BankAccountMapper;
 import com.example.demo.repository.BankAccountRepository;
+import com.example.demo.repository.SequenceProvider;
+import com.example.demo.repository.SubjectRepository;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,25 +24,27 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BankAccountServiceImpl implements BankAccountService {
 
-  private final BankAccountRepository bankAccountRepository;
-  private final BankAccountMapper bankAccountMapper;
+    private final BankAccountRepository bankAccountRepository;
+    private final BankAccountMapper bankAccountMapper;
+    private final SubjectRepository subjectRepository;
+    private final SequenceProvider sequenceProvider;
 
-  @Override
-  @Transactional(readOnly = true)
-  public Page<BankAccountResponse> findAll(Pageable pageable) {
-    return bankAccountRepository.findAll(pageable).map(bankAccountMapper::map);
-  }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BankAccountResponse> findAll(Pageable pageable) {
+        return bankAccountRepository.findAll(pageable).map(bankAccountMapper::map);
+    }
 
-  @Transactional
-  public void applyForLoan(Long subjectId) {
-    Optional<BankAccount> bankAccount = bankAccountRepository.findBySubjectId(subjectId);
-    if (bankAccount.isPresent()) {
-        bankAccount.get().setApplyForLoan(true);
-        if (bankAccount.get().getBalance().compareTo(BigDecimal.TEN) <= 0) {
-            throw new IllegalStateException("Your request will be probably rejected due to low balance");
+    @Transactional
+    public void applyForLoan(Long subjectId) {
+        Optional<BankAccount> bankAccount = bankAccountRepository.findBySubjectId(subjectId);
+        if (bankAccount.isPresent()) {
+            bankAccount.get().setApplyForLoan(true);
+            if (bankAccount.get().getBalance().compareTo(BigDecimal.TEN) <= 0) {
+                throw new IllegalStateException("Your request will be probably rejected due to low balance");
+            }
         }
     }
-  }
 
     @Override
     @Transactional(readOnly = true)
@@ -47,7 +55,26 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     @Transactional
-    public BankAccountResponse addAccount(BankAccount bankAccount) {
-        return bankAccountMapper.map(bankAccountRepository.save(bankAccount));
+    public BankAccountResponse addAccount(BankAccountRequest bankAccountRequest) throws NotFoundException {
+
+        Subject subject = subjectRepository.findById(bankAccountRequest.getSubjectId()).orElseThrow(
+                () -> new NotFoundException("No subject with id " + bankAccountRequest.getSubjectId())
+        );
+
+        BankAccount account = bankAccountMapper.map(enrichAccountBeforeSave(bankAccountRequest));
+        account.setSubject(subject);
+        return bankAccountMapper.map(bankAccountRepository.save(account));
+    }
+
+    @Override
+    public BankAccountRequest enrichAccountBeforeSave(BankAccountRequest account) {
+        account.setSuffix(sequenceProvider.next());
+        account.setAccountNumber(UUID.randomUUID().toString());
+        return account;
+    }
+
+    @Override
+    public int countBySubjectId(Long id) {
+        return bankAccountRepository.countBySubject_Id(id);
     }
 }

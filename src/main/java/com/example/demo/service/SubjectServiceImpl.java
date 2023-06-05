@@ -4,16 +4,14 @@ import com.example.demo.api.CreateSubjectRequest;
 import com.example.demo.api.SubjectResponse;
 import com.example.demo.domain.Subject;
 import com.example.demo.mapper.SubjectMapper;
-import com.example.demo.repository.BankAccountRepository;
 import com.example.demo.repository.SubjectRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @AllArgsConstructor
@@ -21,11 +19,12 @@ public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectMapper subjectMapper;
     private final SubjectRepository subjectRepository;
-    private final BankAccountRepository bankAccountRepository;
+    private final BankAccountService bankAccountService;
 
     @Override
     @Transactional
     public Long save(CreateSubjectRequest request) {
+        request.getAccounts().forEach(bankAccountService::enrichAccountBeforeSave);
         Subject subject = subjectMapper.map(request);
         return subjectRepository.saveAndFlush(subject).getId();
     }
@@ -36,7 +35,7 @@ public class SubjectServiceImpl implements SubjectService {
         return subjectRepository.findById(id)
                 .map(db -> {
                     final var mapped = subjectMapper.map(db);
-                    mapped.setNumberOfAccounts(bankAccountRepository.countBySubject_Id(db.getId()));
+                    mapped.setNumberOfAccounts(bankAccountService.countBySubjectId(db.getId()));
 
                     return mapped;
                 });
@@ -45,7 +44,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public List<SubjectResponse> findAll() {
         return subjectMapper.map(subjectRepository.findAll()).stream()
-                .peek(mapped -> mapped.setNumberOfAccounts(bankAccountRepository.countBySubject_Id(mapped.getId())))
+                .peek(mapped -> mapped.setNumberOfAccounts(bankAccountService.countBySubjectId(mapped.getId())))
                 .toList();
     }
 

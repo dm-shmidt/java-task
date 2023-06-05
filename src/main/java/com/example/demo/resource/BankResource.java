@@ -1,10 +1,11 @@
 package com.example.demo.resource;
 
+import com.example.demo.api.BankAccountRequest;
 import com.example.demo.api.BankAccountResponse;
 import com.example.demo.api.PostTransactionRequest;
-import com.example.demo.domain.BankAccount;
 import com.example.demo.service.BankAccountService;
 import com.example.demo.service.TransactionService;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 
 import javax.validation.Valid;
 import java.util.List;
@@ -28,8 +28,9 @@ public class BankResource {
   private final TransactionService transactionService;
 
   @PostMapping("/new")
-  public ResponseEntity<?> addAccount(@RequestBody BankAccount bankAccount) {
-    return ResponseEntity.ok(bankAccountService.addAccount(bankAccount));
+  public ResponseEntity<?> addAccount(@RequestBody @Valid BankAccountRequest bankAccount, BindingResult result) throws NotFoundException {
+    ResponseEntity<?> badRequestResponse = validateRequest(result);
+    return badRequestResponse != null ? badRequestResponse : ResponseEntity.ok(bankAccountService.addAccount(bankAccount));
   }
 
   @GetMapping
@@ -39,12 +40,8 @@ public class BankResource {
 
   @PostMapping("/{id}/transaction")
   public ResponseEntity<?> addTransaction(@PathVariable Long id, @Valid @RequestBody PostTransactionRequest request, BindingResult result) {
-    if (result.hasErrors()) {
-      List<String> errorMsgs = result.getAllErrors().stream()
-              .map(DefaultMessageSourceResolvable::getDefaultMessage).toList();
-      return ResponseEntity.badRequest().body(errorMsgs);
-    }
-    return ResponseEntity.accepted().body(transactionService.createTransaction(id, request));
+    ResponseEntity<?> badRequestResponse = validateRequest(result);
+    return badRequestResponse != null ? badRequestResponse : ResponseEntity.accepted().body(transactionService.createTransaction(id, request));
   }
 
   @PostMapping("/{id}/applyforloan")
@@ -53,4 +50,12 @@ public class BankResource {
     return ResponseEntity.accepted().build();
   }
 
+  private ResponseEntity<?> validateRequest(BindingResult result) {
+    if (result != null && result.hasErrors()) {
+      List<String> errorMsgs = result.getAllErrors().stream()
+              .map(DefaultMessageSourceResolvable::getDefaultMessage).toList();
+      return ResponseEntity.badRequest().body(errorMsgs);
+    }
+    return null;
+  }
 }
