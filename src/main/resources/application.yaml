@@ -1,10 +1,9 @@
-embedded:
-  postgresql:
-    user: postgres
-    password: admin
-    host: localhost
-    port: 5432
-    schema: bank_db
+db:
+  user: postgres
+  password: admin
+  host: localhost
+  port: 5432
+  schema: bank_db
 spring:
   liquibase:
     change-log: classpath:/schema.xml
@@ -19,10 +18,10 @@ spring:
       ddl-auto: validate
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}
-    password: ${embedded.postgresql.password}
-    username: ${embedded.postgresql.user}
+    url: jdbc:postgresql://${db.host}:${db.port}/${db.schema}
+    password: ${db.password}
+    username: ${db.user}
 
 prefix-client:
-  version: v1
+  version: v2
   url: http://localhost:8082/${prefix-client.version}

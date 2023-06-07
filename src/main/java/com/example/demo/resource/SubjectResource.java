@@ -18,7 +18,7 @@ public class SubjectResource {
 
   // Generated uri-string avoiding constant value of it.
   @PostMapping
-  public ResponseEntity<Void> create(@RequestBody CreateSubjectRequest request) {
+  public ResponseEntity<?> create(@RequestBody CreateSubjectRequest request) {
     String location = ServletUriComponentsBuilder
             .fromCurrentRequest().buildAndExpand().toUriString() + "/";
     return ResponseEntity.created(URI.create(location + subjectService.save(request))).build();

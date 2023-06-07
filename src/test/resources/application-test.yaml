@@ -1,0 +1,24 @@
+prefix-client:
+  version: v2
+  url: http://localhost:8082/${prefix-client.version}
+prefix-test-client:
+  url: http://localhost:8082/v1
+
+embedded:
+  postgresql:
+    user: postgres
+    password: admin
+    host: localhost
+    port: 5432
+    schema: bank_db
+
+spring:
+  liquibase:
+    change-log: classpath:/schema.xml
+  jpa:
+    database-platform: postgres
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    driver-class-name:
+    url: jdbc:tc:postgresql:12-alpine:///test/bank_db

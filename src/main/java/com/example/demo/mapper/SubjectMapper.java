@@ -5,7 +5,6 @@ import com.example.demo.api.SubjectResponse;
 import com.example.demo.domain.Subject;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.List;
 @Mapper(uses = BankAccountMapper.class)
 public interface SubjectMapper {
 
-  @Mapping(target = "lastName", source = "givenName")
   Subject map(CreateSubjectRequest request);
 
   @Named("toDto")
