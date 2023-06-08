@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED)
 @Getter
-public class InternalTransactionException extends RuntimeException {
+public class InternalTransactionException extends Exception {
 
     private final TransactionResponse transactionResponse;
     public InternalTransactionException(TransactionResponse transactionResponse) {

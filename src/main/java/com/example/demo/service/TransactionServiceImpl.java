@@ -22,8 +22,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final AppProps appProps;
 
     @Override
-    @Transactional(noRollbackFor = InternalTransactionException.class)
-    public TransactionResponse createTransaction(Long account, PostTransactionRequest request) {
+    @Transactional(rollbackFor = Throwable.class, noRollbackFor = InternalTransactionException.class)
+    public TransactionResponse createTransaction(Long account, PostTransactionRequest request) throws InternalTransactionException {
 
         BankAccount bankAccount = bankAccountService.findById(account);
         BigDecimal balance = bankAccount.getBalance().add(request.getAmount());

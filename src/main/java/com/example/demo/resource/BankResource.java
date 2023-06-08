@@ -3,6 +3,7 @@ package com.example.demo.resource;
 import com.example.demo.api.BankAccountRequest;
 import com.example.demo.api.BankAccountResponse;
 import com.example.demo.api.PostTransactionRequest;
+import com.example.demo.exception.InternalTransactionException;
 import com.example.demo.service.BankAccountService;
 import com.example.demo.service.TransactionService;
 import javassist.NotFoundException;
@@ -39,7 +40,7 @@ public class BankResource {
   }
 
   @PostMapping("/{id}/transaction")
-  public ResponseEntity<?> addTransaction(@PathVariable Long id, @Valid @RequestBody PostTransactionRequest request, BindingResult result) {
+  public ResponseEntity<?> addTransaction(@PathVariable Long id, @Valid @RequestBody PostTransactionRequest request, BindingResult result) throws InternalTransactionException {
     ResponseEntity<?> badRequestResponse = validateRequest(result);
     if (badRequestResponse != null) {
       return badRequestResponse;
