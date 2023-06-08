@@ -6,15 +6,16 @@ import com.example.demo.domain.Subject;
 import com.example.demo.mapper.SubjectMapper;
 import com.example.demo.repository.SubjectRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 @AllArgsConstructor
+@Transactional
 public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectMapper subjectMapper;

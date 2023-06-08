@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Transactional
 @Entity
 @Table(name = "subjects")
 public class Subject {

@@ -121,4 +121,36 @@ public class IntegrationTest {
 
         System.out.println(transactionId);
     }
+    @Test
+    @Order(3)
+    void testAddValidTransactionAndBalanceIsLowerThanBalanceThreshold200() throws Exception {
+        String uri = "/accounts?page=0&size=10&sort=id";
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode responseJson = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+        Long accountId = responseJson.findValue("id").asLong();
+        assertNotEquals(-1L, accountId);
+
+        uri = "/accounts/" + accountId + "/transaction";
+        String content = """
+                {
+                    "amount": 234
+                }
+                """;
+
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isAccepted())
+                .andReturn();
+
+        responseJson = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+        Long transactionId = responseJson.findValue("id").asLong();
+
+        System.out.println(transactionId);
+    }
+
+
 }

@@ -37,6 +37,7 @@ a corresponding **Subject**.
     * for prefix use `PrefixClient` which is calling external service. It may be using old version of API make sure `v2`
       api is called. Create `PrefixClient` service to generate the prefix. 
 * `SequenceProviderImpl` does not meet simple java conventions fix it
+* add sequence generator for a Transaction id field.
 * there is a missing core functionality where transactions are added to bank accounts. Implement `TransactionService`
   meeting written documentation and write unit tests for this interface which covers all possible scenarios set by
   contract

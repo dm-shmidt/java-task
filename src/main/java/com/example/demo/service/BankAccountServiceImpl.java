@@ -1,10 +1,5 @@
 package com.example.demo.service;
 
-import java.math.BigDecimal;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
-
 import com.example.demo.api.BankAccountRequest;
 import com.example.demo.api.BankAccountResponse;
 import com.example.demo.domain.BankAccount;
@@ -17,10 +12,15 @@ import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+import java.math.BigDecimal;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
 @RequiredArgsConstructor
 public class BankAccountServiceImpl implements BankAccountService {
 
@@ -76,5 +76,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public int countBySubjectId(Long id) {
         return bankAccountRepository.countBySubject_Id(id);
+    }
+
+    @Override
+    @Transactional
+    public BankAccount save(BankAccount bankAccount) {
+        return bankAccountRepository.saveAndFlush(bankAccount);
     }
 }

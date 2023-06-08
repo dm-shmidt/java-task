@@ -22,3 +22,7 @@ spring:
   datasource:
     driver-class-name:
     url: jdbc:tc:postgresql:12-alpine:///test/bank_db
+
+app:
+  props:
+    balance-threshold: 200

@@ -1,6 +1,7 @@
 package com.example.demo.domain;
 
 import java.math.BigDecimal;
+import java.util.List;
 import javax.persistence.*;
 
 import lombok.*;
@@ -10,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Transactional
 @Entity
 @Table(name = "bank_accounts")
 public class BankAccount {
@@ -30,4 +30,8 @@ public class BankAccount {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "subject")
   private Subject subject;
+
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "account", referencedColumnName = "id")
+  private List<Transaction> transactions;
 }

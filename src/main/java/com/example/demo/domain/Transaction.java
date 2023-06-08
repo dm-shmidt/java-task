@@ -17,6 +17,7 @@ import lombok.Setter;
 public class Transaction {
 
   @Id
+  @GeneratedValue
   private Long id;
 
   private BigDecimal amount;

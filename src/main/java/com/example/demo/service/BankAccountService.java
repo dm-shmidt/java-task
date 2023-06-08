@@ -19,4 +19,6 @@ public interface BankAccountService {
   BankAccountRequest enrichAccountBeforeSave(BankAccountRequest account);
 
   int countBySubjectId(Long id);
+
+  BankAccount save(BankAccount bankAccount);
 }

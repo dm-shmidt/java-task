@@ -41,7 +41,10 @@ public class BankResource {
   @PostMapping("/{id}/transaction")
   public ResponseEntity<?> addTransaction(@PathVariable Long id, @Valid @RequestBody PostTransactionRequest request, BindingResult result) {
     ResponseEntity<?> badRequestResponse = validateRequest(result);
-    return badRequestResponse != null ? badRequestResponse : ResponseEntity.accepted().body(transactionService.createTransaction(id, request));
+    if (badRequestResponse != null) {
+      return badRequestResponse;
+    }
+    return ResponseEntity.accepted().body( transactionService.createTransaction(id, request));
   }
 
   @PostMapping("/{id}/applyforloan")

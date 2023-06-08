@@ -1,15 +1,16 @@
 package com.example.demo.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BankAccountRequest {
 
-    @JsonProperty(value = "account_number")
     private String accountNumber;
 
     private String prefix;
@@ -17,7 +18,6 @@ public class BankAccountRequest {
 
     private BigDecimal balance;
 
-    @JsonProperty("subject_id")
     @NotNull(message = "subject_id must not be empty")
     private Long subjectId;
 }

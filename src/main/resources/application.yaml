@@ -25,3 +25,7 @@ spring:
 prefix-client:
   version: v2
   url: http://localhost:8082/${prefix-client.version}
+
+app:
+  props:
+    balance-threshold: 200

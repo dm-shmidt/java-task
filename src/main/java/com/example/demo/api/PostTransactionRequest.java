@@ -1,13 +1,13 @@
 package com.example.demo.api;
 
-import java.math.BigDecimal;
 import lombok.Data;
 
-import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 @Data
 public class PostTransactionRequest {
 
-  @Min(value = 0, message = "Negative amount is not allowed.")
+  @NotNull(message = "Transaction can not be null.")
   private BigDecimal amount;
 }

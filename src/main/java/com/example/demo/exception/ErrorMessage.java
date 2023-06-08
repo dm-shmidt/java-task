@@ -1,20 +1,20 @@
 package com.example.demo.exception;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ErrorMessage {
-    public ErrorMessage(String message) {
-        this.message = message;
+    public ErrorMessage(String error) {
+        this.error = error;
         this.timestamp = LocalDateTime.now();
     }
 
-    private String message;
+    private String error;
 
     private LocalDateTime timestamp;
 }
