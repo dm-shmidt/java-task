@@ -71,7 +71,15 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public BankAccountRequest enrichAccountBeforeSave(BankAccountRequest account) {
-        account.setPrefix(Objects.requireNonNull(prefixClient.getPrefix().getBody()).getPrefix());
+
+        String prefix = "0300-4";
+
+        // call prefix-client for test purpose only
+        try {
+            prefix = Objects.requireNonNull(prefixClient.getPrefix().getBody()).getPrefix();
+        } catch (Exception ignored) {}
+
+        account.setPrefix(prefix);
         account.setSuffix(sequenceProvider.next());
         account.setAccountNumber(UUID.randomUUID().toString());
         return account;
