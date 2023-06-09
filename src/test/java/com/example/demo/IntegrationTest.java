@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -74,7 +75,7 @@ public class IntegrationTest {
                         {
                             "prefix": "pre-",
                             "suffix": "-suffix",
-                            "balance": 700
+                            "balance": 500
                         },
                         {
                             "prefix": "pre1-",
@@ -93,20 +94,21 @@ public class IntegrationTest {
 
     @Test
     @Order(2)
-    void testAddValidTransaction() throws Exception {
+    void testAddTransaction_MultipleCases() throws Exception {
         String uri = "/accounts?page=0&size=10&sort=id";
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         JsonNode responseJson = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
-        Long accountId = responseJson.findValue("id").asLong();
-        assertNotEquals(-1L, accountId);
+        long testAccountId = responseJson.findValue("id").asLong();
+        assertEquals(2, responseJson.findValues("id").size());
+        assertNotEquals(-1L, testAccountId);
 
-        uri = "/accounts/" + accountId + "/transaction";
+        uri = "/accounts/" + testAccountId + "/transaction";
         String content = """
                 {
-                    "amount": 234
+                    "amount": -300
                 }
                 """;
 
@@ -117,26 +119,20 @@ public class IntegrationTest {
                 .andReturn();
 
         responseJson = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
-        Long transactionId = responseJson.findValue("id").asLong();
+        assertNotNull(responseJson.findValue("transaction_id"));
+        BigDecimal resultBalance = new BigDecimal(String.valueOf(responseJson.findValue("result_balance")));
 
-        System.out.println(transactionId);
-    }
-    @Test
-    @Order(3)
-    void testAddValidTransactionAndBalanceIsLowerThanBalanceThreshold200() throws Exception {
-        String uri = "/accounts?page=0&size=10&sort=id";
+        assertEquals(new BigDecimal("200.0"), resultBalance);
+        assertNull(responseJson.findValue("error"));
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
-        JsonNode responseJson = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
-        Long accountId = responseJson.findValue("id").asLong();
-        assertNotEquals(-1L, accountId);
+        //---------------------------------------------------------------------------------------------
+        //---- test the same account: Add valid transaction and balance becomes lower than threshold
+        //---------------------------------------------------------------------------------------------
 
-        uri = "/accounts/" + accountId + "/transaction";
-        String content = """
+        uri = "/accounts/" + testAccountId + "/transaction";
+        content = """
                 {
-                    "amount": 234
+                    "amount": -10
                 }
                 """;
 
@@ -147,10 +143,36 @@ public class IntegrationTest {
                 .andReturn();
 
         responseJson = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
-        Long transactionId = responseJson.findValue("id").asLong();
 
-        System.out.println(transactionId);
+        assertNotNull(responseJson.findValue("transaction_id"));
+
+        resultBalance = new BigDecimal(String.valueOf(responseJson.findValue("result_balance")));
+
+        assertEquals(new BigDecimal("190.0"), resultBalance);
+        String error = String.valueOf(responseJson.findValue("error"));
+        assertTrue(error.contains("Balance is under threshold"));
+
+        //---------------------------------------------------------------------------------------------
+        //---- test the same account: Add transaction with an amount exceeding the current balance.
+        //---------------------------------------------------------------------------------------------
+
+        content = """
+                {
+                    "amount": -200
+                }
+                """;
+
+        mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        responseJson = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+
+        assertNotNull(responseJson.findValue("error"));
+        error = String.valueOf(responseJson.findValue("error"));
+        assertTrue(error.contains("Transaction amount exceeds the balance"));
+
     }
-
-
 }

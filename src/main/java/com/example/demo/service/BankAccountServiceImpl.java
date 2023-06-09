@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.api.BankAccountRequest;
 import com.example.demo.api.BankAccountResponse;
+import com.example.demo.client.PrefixClient;
 import com.example.demo.domain.BankAccount;
 import com.example.demo.domain.Subject;
 import com.example.demo.mapper.BankAccountMapper;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +30,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     private final BankAccountMapper bankAccountMapper;
     private final SubjectRepository subjectRepository;
     private final SequenceProvider sequenceProvider;
+    private final PrefixClient prefixClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -68,6 +71,7 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public BankAccountRequest enrichAccountBeforeSave(BankAccountRequest account) {
+        account.setPrefix(Objects.requireNonNull(prefixClient.getPrefix().getBody()).getPrefix());
         account.setSuffix(sequenceProvider.next());
         account.setAccountNumber(UUID.randomUUID().toString());
         return account;
